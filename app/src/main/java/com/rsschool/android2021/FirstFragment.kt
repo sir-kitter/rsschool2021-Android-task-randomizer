@@ -73,11 +73,17 @@ class FirstFragment : Fragment() {
     }
 
     fun readyToGenerate(): Boolean {
-        val min = editMin?.text.toString().toLong()
-        val max = editMax?.text.toString().toLong()
-        return editMin != null && editMax != null &&
-                editMin!!.text.toString().isNotEmpty() && editMax!!.text.toString().isNotEmpty() &&
-                min >= 0 && max >= 0 && min <= max && min <= Int.MAX_VALUE && max <= Int.MAX_VALUE
+        try {
+            val min = editMin?.text.toString().toLong()
+            val max = editMax?.text.toString().toLong()
+            return editMin != null && editMax != null &&
+                    editMin!!.text.toString().isNotEmpty() && editMax!!.text.toString()
+                .isNotEmpty() &&
+                    min >= 0 && max >= 0 && min <= max && min <= Int.MAX_VALUE && max <= Int.MAX_VALUE
+        }
+        catch(e: Throwable) {
+            return false
+        }
     }
 
     companion object {

@@ -1,17 +1,30 @@
 package com.rsschool.android2021
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
+import android.widget.Toast.*
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 
 class FirstFragment : Fragment() {
 
-    private var generateButton: Button? = null
-    private var previousResult: TextView? = null
+    private var open2nd: IOpen2nd? = null
+
+    private var buttonGenerate: Button? = null
+    private var textPreviousResult: TextView? = null
+    private var editMin: EditText? = null
+    private var editMax: EditText? = null
+
+    private fun showToast(text: String) {
+        Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -21,20 +34,50 @@ class FirstFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_first, container, false)
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        open2nd = context as IOpen2nd
+    }
+
+    override fun onStart() {
+        super.onStart()
+        //requireActivity().onBackPressedDispatcher.addCallback(callback)
+    }
+
+    override fun onStop() {
+        //callback.remove()
+        super.onStop()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        previousResult = view.findViewById(R.id.previous_result)
-        generateButton = view.findViewById(R.id.generate)
+        textPreviousResult = view.findViewById(R.id.previous_result)
+        buttonGenerate = view.findViewById(R.id.generate)
 
         val result = arguments?.getInt(PREVIOUS_RESULT_KEY)
-        previousResult?.text = "Previous result: ${result.toString()}"
+        textPreviousResult?.text = "Previous result: ${result.toString()}"
 
-        // TODO: val min = ...
-        // TODO: val max = ...
+        editMin = view.findViewById(R.id.min_value);
+        editMax = view.findViewById(R.id.max_value);
 
-        generateButton?.setOnClickListener {
-            // TODO: send min and max to the SecondFragment
+        buttonGenerate?.setOnClickListener {
+            if(readyToGenerate()) {
+                val min = editMin?.text.toString().toInt()
+                val max = editMax?.text.toString().toInt()
+                open2nd?.Open2nd(min, max)
+            }
+            else {
+                showToast("Invalid input");
+            }
         }
+    }
+
+    fun readyToGenerate(): Boolean {
+        val min = editMin?.text.toString().toLong()
+        val max = editMax?.text.toString().toLong()
+        return editMin != null && editMax != null &&
+                editMin!!.text.toString().isNotEmpty() && editMax!!.text.toString().isNotEmpty() &&
+                min >= 0 && max >= 0 && min <= max && min <= Int.MAX_VALUE && max <= Int.MAX_VALUE
     }
 
     companion object {
